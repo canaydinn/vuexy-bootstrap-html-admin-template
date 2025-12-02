@@ -70,8 +70,17 @@ exports.login = async (req, res) => {
 // POST /api/auth/signup
 exports.signup = async (req, res) => {
   try {
-    const { username, email, password, full_name, role_id, municipality_id } =
-      req.body;
+    const {
+      username: rawUsername,
+      email: rawEmail,
+      password,
+      full_name,
+      role_id,
+      municipality_id,
+    } = req.body;
+
+    const username = rawUsername?.trim();
+    const email = rawEmail?.trim().toLowerCase();
 
     if (!username || !password || !municipality_id) {
       return res.status(400).json({
@@ -80,10 +89,22 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const exists = await knex('users')
-      .where({ username })
-      .orWhere({ email })
+    const municipality = await knex('municipalities')
+      .where({ id: municipality_id, is_active: true })
       .first();
+
+    if (!municipality) {
+      return res
+        .status(400)
+        .json({ message: 'Geçerli ve aktif bir belediye bulunamadı' });
+    }
+
+    const existsQuery = knex('users').where({ username });
+    if (email) {
+      existsQuery.orWhere({ email });
+    }
+
+    const exists = await existsQuery.first();
 
     if (exists) {
       return res
@@ -128,19 +149,24 @@ exports.municipalitySignup = async (req, res) => {
   const trx = await knex.transaction();
   try {
     const {
-      code,
-      name,
+      code: rawCode,
+      name: rawName,
       province,
       district,
       tax_number,
       address,
       contact_email,
       contact_phone,
-      admin_username,
+      admin_username: rawAdminUsername,
       admin_password,
       admin_email,
       admin_full_name,
     } = req.body;
+
+    const code = rawCode?.trim();
+    const name = rawName?.trim();
+    const admin_username = rawAdminUsername?.trim();
+    const normalizedAdminEmail = admin_email?.trim().toLowerCase();
 
     if (!code || !name || !province || !district) {
       await trx.rollback();
@@ -167,10 +193,12 @@ exports.municipalitySignup = async (req, res) => {
         .json({ message: 'Bu municipality code zaten kullanılıyor' });
     }
 
-    const userExists = await trx('users')
-      .where({ username: admin_username })
-      .orWhere({ email: admin_email })
-      .first();
+    const adminExistsQuery = trx('users').where({ username: admin_username });
+    if (normalizedAdminEmail) {
+      adminExistsQuery.orWhere({ email: normalizedAdminEmail });
+    }
+
+    const userExists = await adminExistsQuery.first();
 
     if (userExists) {
       await trx.rollback();
@@ -211,7 +239,7 @@ exports.municipalitySignup = async (req, res) => {
     const [adminUser] = await trx('users')
       .insert({
         username: admin_username,
-        email: admin_email,
+        email: normalizedAdminEmail,
         full_name: admin_full_name,
         password_hash: adminPasswordHash,
         role_id: 1, // sistem/belediye yöneticisi
@@ -303,7 +331,7 @@ exports.changePassword = async (req, res) => {
 // POST /api/auth/request-password-reset
 exports.requestPasswordReset = async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
 
     if (!email) {
       return res.status(400).json({ message: 'E-posta zorunludur' });
@@ -311,7 +339,7 @@ exports.requestPasswordReset = async (req, res) => {
 
     const user = await knex('users').where({ email }).first();
 
-    if (!user) {
+    if (!user || user.is_active === false) {
       return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
     }
 
@@ -358,7 +386,7 @@ exports.resetPassword = async (req, res) => {
 
     const user = await knex('users').where({ id: payload.id }).first();
 
-    if (!user) {
+    if (!user || user.is_active === false) {
       return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
     }
 
