@@ -13,5 +13,6 @@ router.get('/me', auth, authController.me);
 
 // Çıkış
 router.post('/logout', auth, authController.logout);
+router.post('/municipality-signup', authController.municipalitySignup);
 
 module.exports = router;
