@@ -1,4 +1,6 @@
+// 08_asset_documents.js
 exports.seed = async function (knex) {
+  await knex('asset_documents').del();
 
   await knex('asset_documents').insert([
     {
@@ -10,6 +12,7 @@ exports.seed = async function (knex) {
       issue_date: '2023-05-10',
       amount: 18500,
       uploaded_by_user_id: 1,
+      municipality_id: 1,
     },
     {
       id: 2,
@@ -20,6 +23,7 @@ exports.seed = async function (knex) {
       issue_date: '2022-03-20',
       amount: 3500,
       uploaded_by_user_id: 2,
-    }
+      municipality_id: 1,
+    },
   ]);
 };

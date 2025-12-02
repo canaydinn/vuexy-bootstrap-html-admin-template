@@ -12,5 +12,6 @@ router.use('/reports', require('./reports.routes'));
 router.use('/uploads', require('./uploads.routes'));
 router.use('/audit', require('./audit.routes'));
 router.use('/qrcode', require('./qrcode.routes'));
+router.use('/admin/municipalities', require('./municipalities.routes'));
 
 module.exports = router;

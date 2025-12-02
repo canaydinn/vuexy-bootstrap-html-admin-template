@@ -1,28 +1,55 @@
+// api/src/controllers/auth.controller.js
 const knex = require('../config/knex');
 const bcrypt = require('bcryptjs');
-const { generateToken } = require('../utils/jwt');
+const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
+
+// POST /api/auth/login
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await knex('users').where({ username }).first();
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Kullanıcı adı ve şifre zorunludur' });
+    }
+
+    const user = await knex('users')
+      .where({ username })
+      .first();
 
     if (!user) {
-      return res.status(400).json({ message: 'Kullanıcı bulunamadı' });
+      return res.status(401).json({ message: 'Kullanıcı bulunamadı' });
     }
 
-    const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) {
-      return res.status(400).json({ message: 'Şifre hatalı' });
+    if (user.is_active === false) {
+      return res.status(403).json({ message: 'Kullanıcı pasif durumda' });
     }
 
-    const token = generateToken(user);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Hatalı şifre' });
+    }
 
+    // Çok belediyeli yapı için municipality_id de token'a dahil
+    const payload = {
+      id: user.id,
+      role_id: user.role_id,
+      municipality_id: user.municipality_id,
+      username: user.username,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, {
+      expiresIn: '12h',
+    });
+
+    // Geliştirme ortamı için cookie ayarları
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false, // prod'da true + sameSite:'strict'
-      maxAge: 24 * 60 * 60 * 1000,
+      secure: false, // prod'da true yapılmalı (HTTPS)
+      sameSite: 'lax',
     });
 
     return res.json({
@@ -31,15 +58,29 @@ exports.login = async (req, res) => {
         id: user.id,
         username: user.username,
         role_id: user.role_id,
+        municipality_id: user.municipality_id,
       },
     });
   } catch (err) {
-    console.error('Login hatası:', err);
-    res.status(500).json({ message: 'Sunucu hatası' });
+    console.error('auth.login hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
   }
 };
 
-exports.logout = (req, res) => {
+// GET /api/auth/me
+exports.me = async (req, res) => {
+  // auth middleware'de req.user set ediliyor
+  if (!req.user) {
+    return res.status(401).json({ message: 'Oturum bulunamadı' });
+  }
+
+  return res.json({
+    user: req.user,
+  });
+};
+
+// POST /api/auth/logout
+exports.logout = async (req, res) => {
   res.clearCookie('token');
   return res.json({ message: 'Çıkış yapıldı' });
 };

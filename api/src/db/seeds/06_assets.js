@@ -1,4 +1,6 @@
+// 07_assets.js
 exports.seed = async function (knex) {
+  await knex('assets').del();
 
   await knex('assets').insert([
     {
@@ -18,6 +20,7 @@ exports.seed = async function (knex) {
       purchase_price: 18500,
       purchase_date: '2023-05-10',
       created_by_user_id: 1,
+      municipality_id: 1,
     },
     {
       id: 2,
@@ -34,6 +37,7 @@ exports.seed = async function (knex) {
       purchase_price: 3500,
       purchase_date: '2022-03-20',
       created_by_user_id: 1,
-    }
+      municipality_id: 1,
+    },
   ]);
 };

@@ -1,118 +1,267 @@
+// api/src/controllers/assets.controller.js
 const knex = require('../config/knex');
 
-exports.list = async (req, res) => {
+/**
+ * GET /api/assets
+ * Aktif belediyeye ait tüm varlıkları listeler.
+ */
+exports.listAssets = async (req, res) => {
   try {
-    const { department_id, category_id, search } = req.query;
+    const { municipality_id } = req.user;
 
-    let query = knex('assets')
+    const assets = await knex('assets as a')
+      .leftJoin('asset_categories as c', 'a.category_id', 'c.id')
+      .leftJoin('departments as d', 'a.department_id', 'd.id')
+      .leftJoin('locations as l', 'a.location_id', 'l.id')
+      .where('a.municipality_id', municipality_id)
       .select(
-        'assets.*',
-        'departments.name as department_name',
-        'locations.name as location_name',
-        'asset_categories.name as category_name'
+        'a.id',
+        'a.asset_code',
+        'a.name',
+        'a.description',
+        'a.asset_type',
+        'a.quantity',
+        'a.unit',
+        'a.tasinir_code',
+        'a.serial_number',
+        'a.purchase_price',
+        'a.purchase_date',
+        'a.created_at',
+        'a.updated_at',
+        'c.id as category_id',
+        'c.name as category_name',
+        'd.id as department_id',
+        'd.name as department_name',
+        'l.id as location_id',
+        'l.name as location_name'
       )
-      .leftJoin('departments', 'assets.department_id', 'departments.id')
-      .leftJoin('locations', 'assets.location_id', 'locations.id')
-      .leftJoin('asset_categories', 'assets.category_id', 'asset_categories.id');
+      .orderBy('a.id', 'asc');
 
-    if (department_id) query = query.where('assets.department_id', department_id);
-    if (category_id) query = query.where('assets.category_id', category_id);
-    if (search) {
-      query = query.whereILike('assets.name', `%${search}%`).orWhereILike('assets.asset_code', `%${search}%`);
-    }
-
-    const rows = await query;
-    res.json(rows);
+    return res.json(assets);
   } catch (err) {
-    console.error('assets list hatası:', err);
-    res.status(500).json({ message: 'Sunucu hatası' });
+    console.error('assets.listAssets hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
   }
 };
 
-exports.create = async (req, res) => {
+/**
+ * GET /api/assets/:id
+ * Sadece aktif belediyeye ait bir varlığı getirir.
+ */
+exports.getAssetById = async (req, res) => {
   try {
-    const body = req.body;
-    const currentUserId = req.user?.id || null;
+    const { municipality_id } = req.user;
+    const { id } = req.params;
+
+    const asset = await knex('assets as a')
+      .leftJoin('asset_categories as c', 'a.category_id', 'c.id')
+      .leftJoin('departments as d', 'a.department_id', 'd.id')
+      .leftJoin('locations as l', 'a.location_id', 'l.id')
+      .where('a.id', id)
+      .andWhere('a.municipality_id', municipality_id)
+      .select(
+        'a.id',
+        'a.asset_code',
+        'a.name',
+        'a.description',
+        'a.asset_type',
+        'a.quantity',
+        'a.unit',
+        'a.tasinir_code',
+        'a.serial_number',
+        'a.purchase_price',
+        'a.purchase_date',
+        'a.created_at',
+        'a.updated_at',
+        'c.id as category_id',
+        'c.name as category_name',
+        'd.id as department_id',
+        'd.name as department_name',
+        'l.id as location_id',
+        'l.name as location_name'
+      )
+      .first();
+
+    if (!asset) {
+      return res.status(404).json({ message: 'Varlık bulunamadı' });
+    }
+
+    return res.json(asset);
+  } catch (err) {
+    console.error('assets.getAssetById hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
+  }
+};
+
+/**
+ * POST /api/assets
+ * Yeni varlık oluşturur.
+ * Not: municipality_id body'den alınmaz, her zaman JWT'den set edilir.
+ */
+exports.createAsset = async (req, res) => {
+  try {
+    const { municipality_id, id: currentUserId } = req.user;
+
+    const {
+      asset_code,
+      name,
+      description,
+      category_id,
+      department_id,
+      location_id,
+      assigned_user_id,
+      quantity,
+      unit,
+      tasinir_code,
+      asset_type,
+      serial_number,
+      purchase_price,
+      purchase_date,
+    } = req.body;
+
+    if (!asset_code || !name || !category_id || !department_id || !location_id) {
+      return res.status(400).json({
+        message: 'asset_code, name, category_id, department_id ve location_id zorunludur',
+      });
+    }
+
+    // Aynı belediye içinde asset_code benzersiz olsun
+    const existing = await knex('assets')
+      .where({
+        municipality_id,
+        asset_code,
+      })
+      .first();
+
+    if (existing) {
+      return res.status(400).json({ message: 'Bu asset_code bu belediyede zaten kullanılıyor' });
+    }
 
     const [inserted] = await knex('assets')
       .insert({
-        asset_code: body.asset_code,
-        name: body.name,
-        description: body.description,
-        category_id: body.category_id,
-        department_id: body.department_id,
-        location_id: body.location_id,
-        assigned_user_id: body.assigned_user_id || null,
-        quantity: body.quantity || 1,
-        unit: body.unit || 'Adet',
-        tasinir_code: body.tasinir_code || null,
-        asset_type: body.asset_type || 'demirbas',
-        serial_number: body.serial_number || null,
-        purchase_price: body.purchase_price || null,
-        purchase_date: body.purchase_date || null,
+        asset_code,
+        name,
+        description: description || null,
+        category_id,
+        department_id,
+        location_id,
+        assigned_user_id: assigned_user_id || null,
+        quantity: quantity ?? 1,
+        unit: unit || 'Adet',
+        tasinir_code: tasinir_code || null,
+        asset_type: asset_type || 'demirbas',
+        serial_number: serial_number || null,
+        purchase_price: purchase_price || null,
+        purchase_date: purchase_date || null,
+        municipality_id,
         created_by_user_id: currentUserId,
       })
       .returning('*');
 
-    res.status(201).json(inserted);
+    return res.status(201).json(inserted);
   } catch (err) {
-    console.error('asset create hatası:', err);
-    res.status(500).json({ message: 'Sunucu hatası' });
+    console.error('assets.createAsset hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
   }
 };
 
-exports.update = async (req, res) => {
+/**
+ * PUT /api/assets/:id
+ * Varlığı günceller (sadece kendi belediyesindeki kayıt üzerinde).
+ */
+exports.updateAsset = async (req, res) => {
   try {
+    const { municipality_id } = req.user;
     const { id } = req.params;
-    const body = req.body;
-    const currentUserId = req.user?.id || null;
+
+    const {
+      asset_code,
+      name,
+      description,
+      category_id,
+      department_id,
+      location_id,
+      assigned_user_id,
+      quantity,
+      unit,
+      tasinir_code,
+      asset_type,
+      serial_number,
+      purchase_price,
+      purchase_date,
+    } = req.body;
+
+    // Önce bu id ilgili belediyeye mi ait kontrol edelim
+    const existing = await knex('assets')
+      .where({ id, municipality_id })
+      .first();
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Varlık bulunamadı veya bu belediyeye ait değil' });
+    }
+
+    // asset_code değiştiyse aynı belediyede çakışma olmasın
+    if (asset_code && asset_code !== existing.asset_code) {
+      const conflict = await knex('assets')
+        .where({ municipality_id, asset_code })
+        .andWhereNot({ id })
+        .first();
+
+      if (conflict) {
+        return res.status(400).json({ message: 'Bu asset_code bu belediyede zaten kullanılıyor' });
+      }
+    }
 
     const [updated] = await knex('assets')
-      .where({ id })
+      .where({ id, municipality_id })
       .update(
         {
-          asset_code: body.asset_code,
-          name: body.name,
-          description: body.description,
-          category_id: body.category_id,
-          department_id: body.department_id,
-          location_id: body.location_id,
-          assigned_user_id: body.assigned_user_id || null,
-          quantity: body.quantity,
-          unit: body.unit,
-          tasinir_code: body.tasinir_code,
-          asset_type: body.asset_type,
-          serial_number: body.serial_number,
-          purchase_price: body.purchase_price,
-          purchase_date: body.purchase_date,
-          updated_by_user_id: currentUserId,
+          asset_code: asset_code ?? existing.asset_code,
+          name: name ?? existing.name,
+          description: description ?? existing.description,
+          category_id: category_id ?? existing.category_id,
+          department_id: department_id ?? existing.department_id,
+          location_id: location_id ?? existing.location_id,
+          assigned_user_id: assigned_user_id ?? existing.assigned_user_id,
+          quantity: quantity ?? existing.quantity,
+          unit: unit ?? existing.unit,
+          tasinir_code: tasinir_code ?? existing.tasinir_code,
+          asset_type: asset_type ?? existing.asset_type,
+          serial_number: serial_number ?? existing.serial_number,
+          purchase_price: purchase_price ?? existing.purchase_price,
+          purchase_date: purchase_date ?? existing.purchase_date,
+          updated_at: knex.fn.now(),
         },
-        '*'
+        ['*']
       );
 
-    if (!updated) {
-      return res.status(404).json({ message: 'Envanter kaydı bulunamadı' });
-    }
-
-    res.json(updated);
+    return res.json(updated);
   } catch (err) {
-    console.error('asset update hatası:', err);
-    res.status(500).json({ message: 'Sunucu hatası' });
+    console.error('assets.updateAsset hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
   }
 };
 
-exports.remove = async (req, res) => {
+/**
+ * DELETE /api/assets/:id
+ * Şimdilik fiziksel silme (ileride soft delete'e çevrilebilir).
+ */
+exports.deleteAsset = async (req, res) => {
   try {
+    const { municipality_id } = req.user;
     const { id } = req.params;
-    const affected = await knex('assets').where({ id }).del();
 
-    if (!affected) {
-      return res.status(404).json({ message: 'Envanter kaydı bulunamadı' });
+    const deletedCount = await knex('assets')
+      .where({ id, municipality_id })
+      .del();
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ message: 'Varlık bulunamadı veya bu belediyeye ait değil' });
     }
 
-    res.json({ message: 'Envanter silindi' });
+    return res.json({ message: 'Varlık silindi' });
   } catch (err) {
-    console.error('asset delete hatası:', err);
-    res.status(500).json({ message: 'Sunucu hatası' });
+    console.error('assets.deleteAsset hatası:', err);
+    return res.status(500).json({ message: 'Sunucu hatası' });
   }
 };

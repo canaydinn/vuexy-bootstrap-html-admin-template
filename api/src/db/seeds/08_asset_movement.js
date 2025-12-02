@@ -1,4 +1,6 @@
+// 09_asset_movements.js
 exports.seed = async function (knex) {
+  await knex('asset_movements').del();
 
   await knex('asset_movements').insert([
     {
@@ -13,6 +15,7 @@ exports.seed = async function (knex) {
       movement_date: '2023-05-15',
       notes: 'Laptop zimmet edildi',
       created_by_user_id: 2,
+      municipality_id: 1,
     },
     {
       id: 2,
@@ -26,6 +29,7 @@ exports.seed = async function (knex) {
       movement_date: '2023-06-01',
       notes: 'Ofis sandalyesi depoya taşındı',
       created_by_user_id: 4,
-    }
+      municipality_id: 1,
+    },
   ]);
 };
