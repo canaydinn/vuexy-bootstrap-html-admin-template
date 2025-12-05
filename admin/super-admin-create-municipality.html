@@ -14,8 +14,9 @@
 
     <title>Yeni Belediye Ekle | Envanter360</title>
 
-    <meta name="description" content="Süperadmin paneli ile belediye ekleme formu." />
+    <meta name="description" content="Süperadmin paneli ile yeni belediye ekleyin." />
 
+    <!-- Include Vuexy core CSS and vendor CSS here -->
     <link rel="icon" type="image/x-icon" href="../admin/assets/img/favicon/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,150 +35,299 @@
   </head>
 
   <body>
+    <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
+        <!-- Superadmin Sidebar Navigation -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="/super-admin-dashboard.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
+                    fill="#7367F0" />
+                  <path
+                    opacity="0.06"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z"
+                    fill="#161616" />
+                  <path
+                    opacity="0.06"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z"
+                    fill="#161616" />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
+                    fill="#7367F0" />
+                </svg>
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">Envantor</span>
+            </a>
+
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1 navigation navigation-main">
+            <li class="menu-item active">
+              <a href="../admin/super-admin-dashboard.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div>Süper Admin Paneli</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../admin/super-admin-municipalities.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-building"></i>
+                <div>Belediyeler</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../admin/super-admin-users.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div>Kullanıcılar</div>
+              </a>
+            </li>
+            <li class="menu-item ">
+              <a href="../admin/super-admin-plans.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-layers-intersect"></i>
+                <div>Abonelik Planları</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../admin/super-admin-logs.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-clipboard-text"></i>
+                <div>Sistem Logları</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Sidebar -->
+
+        <!-- Layout container -->
         <div class="layout-page">
+          <!-- Navbar -->
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <div class="navbar-nav align-items-center">
+               
+              </div>
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="avatar avatar-online">
+                      <img src="../admin/assets/img/avatars/1.png" alt class="rounded-circle" />
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img src="../admin/assets/img/avatars/1.png" alt class="rounded-circle" />
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="fw-semibold d-block">Süperadmin</span>
+                            <small class="text-muted">Yönetici</small>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li><div class="dropdown-divider"></div></li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);">
+                        <i class="ti ti-user-check me-2 ti-sm"></i>
+                        <span class="align-middle">Profilim</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);">
+                        <i class="ti ti-settings me-2 ti-sm"></i>
+                        <span class="align-middle">Ayarlar</span>
+                      </a>
+                    </li>
+                    <li><div class="dropdown-divider"></div></li>
+                    <li>
+                      <a class="dropdown-item" href="/login.html">
+                        <i class="ti ti-logout me-2 ti-sm"></i>
+                        <span class="align-middle">Çıkış Yap</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+          </nav>
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
           <div class="content-wrapper">
+            <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
-              <div class="row align-items-center mb-4">
-                <div class="col">
-                  <h4 class="fw-bold mb-1">Yeni Belediye Ekle</h4>
-                  <p class="text-muted mb-0">Belediye bilgilerini girerek kaydı tamamlayın.</p>
+              <div class="row">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                      <h4 class="fw-bold mb-1">Yeni Belediye Ekle</h4>
+                      <p class="text-muted mb-0">Belediye bilgilerini doldurup kaydedin.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="card">
-                <div class="card-header pb-1">
-                  <h5 class="mb-1">Belediye Bilgileri</h5>
-                  <small class="text-muted">Tüm alanları eksiksiz doldurun.</small>
-                </div>
-                <div class="card-body">
-                  <div class="alert alert-dismissible fade show d-none" role="alert" data-role="municipality-create-feedback"></div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Belediye Bilgileri</h5>
+                      <small class="text-muted">Plan ve kota bilgileri ile birlikte tüm alanları doldurun.</small>
+                    </div>
+                    <div class="card-body">
+                      <form   id="municipality-create-form" data-role="municipality-create-form" class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label" for="name">Belediye Adı</label>
+                          <input type="text" id="name" name="name" class="form-control" placeholder="Örn: Konak Belediyesi" required />
+                        </div>
+                        <div class="col-md-3">
+                          <label class="form-label" for="province">İl</label>
+                          <input type="text" id="province" name="province" class="form-control" placeholder="İzmir" required />
+                        </div>
+                        <div class="col-md-3">
+                          <label class="form-label" for="district">İlçe</label>
+                          <input type="text" id="district" name="district" class="form-control" placeholder="Konak" required />
+                        </div>
 
-                  <form class="row g-3" data-role="municipality-create-form">
-                    
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="name">Belediye Adı</label>
-                      <input type="text" class="form-control" id="name" name="name" placeholder="Örn: Konak Belediyesi" required />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="province">İl</label>
-                      <input type="text" class="form-control" id="province" name="province" placeholder="Örn: İzmir" required />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="district">İlçe</label>
-                      <input type="text" class="form-control" id="district" name="district" placeholder="Örn: Konak" required />
-                    </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="tax_number">Vergi Numarası</label>
+                          <input type="text" id="tax_number" name="tax_number" class="form-control" placeholder="1234567890" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="contact_email">İletişim E-posta</label>
+                          <input type="email" id="contact_email" name="contact_email" class="form-control" placeholder="iletisim@belediye.gov.tr" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="contact_phone">İletişim Telefon</label>
+                          <input type="tel" id="contact_phone" name="contact_phone" class="form-control" placeholder="0 (232) 000 00 00" />
+                        </div>
 
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="tax_number">Vergi Numarası</label>
-                      <input type="text" class="form-control" id="tax_number" name="tax_number" placeholder="Vergi numarası" />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="contact_person">Yetkili Kişi</label>
-                      <input type="text" class="form-control" id="contact_person" name="contact_person" placeholder="Ad Soyad" />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="contact_email">E-posta</label>
-                      <input type="email" class="form-control" id="contact_email" name="contact_email" placeholder="ornek@belediye.gov.tr" />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="contact_phone">Telefon</label>
-                      <input type="tel" class="form-control" id="contact_phone" name="contact_phone" placeholder="05xx xxx xx xx" />
-                    </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="contact_person">Yetkili Kişi</label>
+                          <input type="text" id="contact_person" name="contact_person" class="form-control" placeholder="İlgili kişi adı" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="address">Adres</label>
+                          <input type="text" id="address" name="address" class="form-control" placeholder="Adres bilgisi" />
+                        </div>
 
-                    <div class="col-12">
-                      <label class="form-label" for="address">Adres</label>
-                      <textarea class="form-control" id="address" name="address" rows="3" placeholder="Açık adres"></textarea>
-                    </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="license_start_date">Lisans Başlangıç</label>
+                          <input type="date" id="license_start_date" name="license_start_date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="license_end_date">Lisans Bitiş</label>
+                          <input type="date" id="license_end_date" name="license_end_date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="quota_end_date">Kota Bitiş</label>
+                          <input type="date" id="quota_end_date" name="quota_end_date" class="form-control" />
+                        </div>
 
-                    <div class="col-md-4 col-lg-3">
-                      <label class="form-label" for="license_start_date">Lisans Başlangıç Tarihi</label>
-                      <input type="date" class="form-control" id="license_start_date" name="license_start_date" />
-                    </div>
-                    <div class="col-md-4 col-lg-3">
-                      <label class="form-label" for="license_end_date">Lisans Bitiş Tarihi</label>
-                      <input type="date" class="form-control" id="license_end_date" name="license_end_date" />
-                    </div>
-                    <div class="col-md-4 col-lg-3">
-                      <label class="form-label" for="quota_end_date">Kota Bitiş Tarihi</label>
-                      <input type="date" class="form-control" id="quota_end_date" name="quota_end_date" />
-                    </div>
-                    <div class="col-md-4 col-lg-3">
-                      <label class="form-label" for="plan_type">Plan Tipi</label>
-                       <select class="form-select" id="plan_type" name="plan_type">
-                        <option value="standard" selected>Standard</option>
-                        <option value="pro">Pro</option>
-                        <option value="deneme">Deneme</option>
-                      </select>
-                    </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="plan_type">Plan Türü</label>
+                          <select id="plan_type" name="plan_type" class="form-select">
+                            <option value="trial">Deneme</option>
+                            <option value="standard">Standart</option>
+                            <option value="pro">Pro</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="max_users">Maksimum Kullanıcı</label>
+                          <input type="number" id="max_users" name="max_users" class="form-control" min="0" placeholder="Sayı girin" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label" for="max_assets">Maksimum Envanter</label>
+                          <input type="number" id="max_assets" name="max_assets" class="form-control" min="0" placeholder="Sayı girin" />
+                        </div>
 
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="status">Durum</label>
-                      <select class="form-select" id="status" name="status">
-                        <option value="pending" selected>Beklemede</option>
-                        <option value="active">Aktif</option>
-                        <option value="passive">Pasif</option>
-                      </select>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="is_active">Aktif mi?</label>
-                      <select class="form-select" id="is_active" name="is_active">
-                        <option value="true">Evet</option>
-                        <option value="false">Hayır</option>
-                      </select>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="logo_url">Logo URL</label>
-                      <input type="url" class="form-control" id="logo_url" name="logo_url" placeholder="https://..." />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="domain_url">Domain URL</label>
-                      <input type="url" class="form-control" id="domain_url" name="domain_url" placeholder="https://..." />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="api_key">API Key</label>
-                      <input type="text" class="form-control" id="api_key" name="api_key" placeholder="API anahtarı" />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="activation_token">Aktivasyon Token</label>
-                      <input type="text" class="form-control" id="activation_token" name="activation_token" placeholder="Token" />
-                    </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="logo_url">Logo URL</label>
+                          <input type="url" id="logo_url" name="logo_url" class="form-control" placeholder="https://..." />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="domain_url">Alan Adı</label>
+                          <input type="url" id="domain_url" name="domain_url" class="form-control" placeholder="https://belediye.gov.tr" />
+                        </div>
 
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="max_users">Maksimum Kullanıcı</label>
-                      <input type="number" class="form-control" id="max_users" name="max_users" min="0" placeholder="Örn: 50" />
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                      <label class="form-label" for="max_assets">Maksimum Varlık</label>
-                      <input type="number" class="form-control" id="max_assets" name="max_assets" min="0" placeholder="Örn: 500" />
-                    </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="api_key">API Anahtarı</label>
+                          <input type="text" id="api_key" name="api_key" class="form-control" placeholder="Otomatik veya manuel anahtar" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="activation_token">Aktivasyon Token</label>
+                          <input type="text" id="activation_token" name="activation_token" class="form-control" placeholder="Gerekirse aktivasyon token" />
+                        </div>
 
-                    <div class="col-12">
-                      <label class="form-label" for="notes">Notlar</label>
-                      <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Ek notlar"></textarea>
+                        <div class="col-12">
+                          <label class="form-label" for="notes">Notlar</label>
+                          <textarea id="notes" name="notes" class="form-control" rows="3" placeholder="İç notlar"></textarea>
+                        </div>
+                        <div
+                          class="col-12 d-none alert"
+                          role="alert"
+                          data-role="municipality-create-feedback"
+                        ></div>
+                        <div class="col-12 d-flex justify-content-end gap-2">
+                          <a class="btn btn-outline-secondary" href="/super-admin-municipalities.html">Vazgeç</a>
+                          <button type="submit" class="btn btn-primary" data-role="municipality-create-submit">Kaydet</button>
+                        </div>
+                      </form>
                     </div>
-
-                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                      <button type="reset" class="btn btn-outline-secondary">Temizle</button>
-                      <button type="submit" class="btn btn-primary" data-role="municipality-create-submit">Kaydet</button>
-                    </div>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
+            <!-- / Content -->
 
+            <!-- Footer -->
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">© 2024 Envanter360</div>
                 <div class="d-none d-lg-inline-block">Süperadmin Paneli</div>
               </div>
             </footer>
+            <!-- / Footer -->
           </div>
+          <!-- Content wrapper -->
         </div>
+        <!-- / Layout page -->
       </div>
+      <!-- / Layout container -->
     </div>
+    <!-- / Layout wrapper -->
 
+    <!-- Core JS -->
+    <!-- Include Vuexy core JS files -->
     <script src="../admin/assets/vendor/libs/jquery/jquery.js"></script>
     <script src="../admin/assets/vendor/libs/popper/popper.js"></script>
     <script src="../admin/assets/vendor/js/bootstrap.js"></script>
@@ -188,6 +338,7 @@
     <script src="../admin/assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../admin/assets/vendor/js/menu.js"></script>
     <script src="../admin/assets/js/main.js"></script>
-    <script src="../admin/assets/js/app/super-admin-dashboard.js"></script>
+    <script src="../admin/assets/js/app/super-admin-municipality-create.js"></script>
+
   </body>
 </html>
